@@ -1,0 +1,15 @@
+[package]
+name = "wish-tree"
+version = "0.1.0"
+authors = ["Benjamin Klum <benjamin.klum@helgoboss.org>"]
+edition = "2018"
+
+[dependencies]
+globset = "0.4.5"
+walkdir = "2"
+zip = "0.5"
+flate2 = "1.0"
+tar = "0.4"
+
+[dev-dependencies]
+version-sync = "0.9"
