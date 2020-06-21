@@ -29,8 +29,14 @@ let my_dir = dir! {
     "README.txt" => text("This is a README file."),
 };
 
-// 2. "Render" it
+// 2. "Render" it.
 my_dir.render_to_fs("target/my-dir");
 my_dir.render_to_zip("target/my-dir.zip");
 my_dir.render_to_tar_gz("target/my-dir.tar.gz");
 ```
+
+## Known issues
+
+- Error handling has not been thought of so far. It just panics, e.g. if a file is missing. While panicking
+  is okay for my use case (packaging a distribution bundle), it might not be for others. Also, it doesn't
+  which file is missing.
