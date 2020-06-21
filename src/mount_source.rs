@@ -54,11 +54,15 @@ impl MountSource {
                     // Ignore root.
                     continue;
                 }
-                zip.add_directory_from_path(&w.path, options);
+                // The "dir" case is important for empty directories only. See comment below.
+                zip.add_directory_from_path(&w.path, options).unwrap();
             } else {
-                zip.start_file_from_path(&w.path, options);
-                w.reader.read_to_end(&mut buffer);
-                zip.write_all(&*buffer);
+                // When file sets are used, it's possible that the walker visits files whose
+                // parent directory has not been visited. That's not an issue when creating the ZIP
+                // archive. The directory will be created automatically.
+                zip.start_file_from_path(&w.path, options).unwrap();
+                w.reader.read_to_end(&mut buffer).unwrap();
+                zip.write_all(&*buffer).unwrap();
                 buffer.clear();
             }
         }
@@ -76,18 +80,25 @@ impl MountSource {
                     // Ignore root.
                     continue;
                 }
+                // The "dir" case is important for empty directories only. See comment below.
                 let mut header = Header::new_gnu();
                 header.set_entry_type(EntryType::Directory);
-                tar.append_data(&mut header, w.path, io::empty());
+                header.set_size(0);
+                tar.append_data(&mut header, w.path, io::empty()).unwrap();
             } else {
-                w.reader.read_to_end(&mut buffer);
+                // When file sets are used, it's possible that the walker visits files whose
+                // parent directory has not been visited. That's not an issue when creating the tar
+                // archive. The directory will be created automatically.
+                w.reader.read_to_end(&mut buffer).unwrap();
                 let mut header = Header::new_gnu();
                 header.set_entry_type(EntryType::Regular);
                 header.set_size(buffer.len() as _);
-                tar.append_data(&mut header, w.path, buffer.as_slice());
+                tar.append_data(&mut header, w.path, buffer.as_slice())
+                    .unwrap();
                 buffer.clear();
             }
         }
+        tar.finish().unwrap();
     }
 
     /// Returns an iterator that recursively walks over all defined mounts (depth-first).
