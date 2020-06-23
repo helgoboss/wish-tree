@@ -40,3 +40,4 @@ my_dir.render_to_tar_gz("target/my-dir.tar.gz");
 - Error handling has not been thought of so far. It just panics, e.g. if a file is missing. While panicking
   is okay for my use case (packaging a distribution bundle), it might not be for others. Also, it doesn't
   which file is missing.
+- When writing a tar.gz, you can't currently customize executable bits etc.

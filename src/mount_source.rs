@@ -83,6 +83,7 @@ impl MountSource {
                 // The "dir" case is important for empty directories only. See comment below.
                 let mut header = Header::new_gnu();
                 header.set_entry_type(EntryType::Directory);
+                header.set_mode(0o755);
                 header.set_size(0);
                 tar.append_data(&mut header, w.path, io::empty()).unwrap();
             } else {
@@ -92,6 +93,7 @@ impl MountSource {
                 w.reader.read_to_end(&mut buffer).unwrap();
                 let mut header = Header::new_gnu();
                 header.set_entry_type(EntryType::Regular);
+                header.set_mode(0o644);
                 header.set_size(buffer.len() as _);
                 tar.append_data(&mut header, w.path, buffer.as_slice())
                     .unwrap();
